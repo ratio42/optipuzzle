@@ -1,0 +1,40 @@
+Optimizer puzzle May 2020
+-------------------------
+
+Origin: https://puzzles-jn.wixsite.com/puzzles/optimizers
+
+Rules:
+
+ Given: The following 12x12 grid
+
+ .......x....
+ ..x....x....
+ .....x......
+ ....xx....xx
+ ........x...
+ xx.....xx...
+ ............
+ ...xx......x
+ .........x..
+ .xx...x...x.
+ ......x.....
+ ....x...x...
+
+ whereas a "." represents an empty field (to be filled by user) and an "x" represents a blocked field.
+
+ Steps to build a solution:
+
+  1) Grid is to be filled with a complete set of pentominos (they are F, I, L, N, P, T, U, V, W, X, Y and Z). They are allowed to be rotated and reflected. But they must not touch each other, not even diagonally.
+
+  Each field in any pentomino gets automatically a number from 1 to 5, whereby each number occurs only once per pentomino ascending from first left to right and second top to bottom. (We call it in "western world reading order".)
+  Since the grid contains 120 empty fields at start and the pentominos will fill 60 fields, there remain 60 empty fields.
+
+  2) They are all to be filled manually with the numbers 1 to 5, each of them occuring exactly 12 times. (So in the end the complete grid is filled by 24 numbers 1, 2, 3, 4 and 5 each. 12 of them within pentominos, 12 outside.)
+
+ Calculation of points:
+
+  a) If a number in a field is different from all numbers in adjacent fields (8 adjacent fields): Value of field = Sum of numbers in field and adjacent fields.
+  b) If a number in a field touches at least one field with the same number: Value of field = (-1) * Number in field * Sum of numbers in adjacent fields.
+  c) Value of solution = Sum of value of each field.
+
+ Find a solution with as much points as possible!
