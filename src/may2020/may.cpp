@@ -9,6 +9,8 @@ void May::SearchSolution()
 {
     std::cout << "The current grid is:" << std::endl << std:: endl;
     
-    m_PuzzleGrid.PrintConfigurationWithPoints();
+    if (m_PuzzleGrid.IsValid()) {
+        m_PuzzleGrid.PrintConfigurationWithPoints();    
+    }
 }
 

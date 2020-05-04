@@ -1,9 +1,8 @@
 #include "includes/grid.h"
 #include <iostream>
 
-Grid::Grid()
+Grid::Grid() : m_Fields({MayGrid::empty})
 {
-    m_Fields = {MayGrid::empty};
 }
 
 bool Grid::IsValid() const
