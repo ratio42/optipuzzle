@@ -2,48 +2,44 @@
 #include <iostream>
 #include <map>
 
-Grid::Grid() : m_SolutionGrid({empty})
+#define FILL_WITH_TEST_SOLUTION
+
+Grid::Grid() : m_SolutionGrid()
 {
     // fill the blocked fields
-    SetFieldAtPosition(7,0, blocked);
-    SetFieldAtPosition(2,1, blocked); SetFieldAtPosition(7,1, blocked);
-    SetFieldAtPosition(5,2, blocked);
-    SetFieldAtPosition(4,3, blocked); SetFieldAtPosition(5,3, blocked); SetFieldAtPosition(10,3, blocked); SetFieldAtPosition(11,3, blocked);
-    SetFieldAtPosition(8,4, blocked);
-    SetFieldAtPosition(0,5, blocked); SetFieldAtPosition(1,5, blocked); SetFieldAtPosition(7,5, blocked); SetFieldAtPosition(8,5, blocked);
-    SetFieldAtPosition(3,7, blocked); SetFieldAtPosition(4,7, blocked); SetFieldAtPosition(11,7, blocked);
-    SetFieldAtPosition(9,8, blocked);
-    SetFieldAtPosition(1,9, blocked); SetFieldAtPosition(2,9, blocked); SetFieldAtPosition(6,9, blocked); SetFieldAtPosition(10,9, blocked);
-    SetFieldAtPosition(6,10, blocked);
-    SetFieldAtPosition(4,11, blocked); SetFieldAtPosition(8,11, blocked);
+    SetFieldAtPosition(7,0, GridTypes::blocked);
+    SetFieldAtPosition(2,1, GridTypes::blocked); SetFieldAtPosition(7,1, GridTypes::blocked);
+    SetFieldAtPosition(5,2, GridTypes::blocked);
+    SetFieldAtPosition(4,3, GridTypes::blocked); SetFieldAtPosition(5,3, GridTypes::blocked); SetFieldAtPosition(10,3, GridTypes::blocked); SetFieldAtPosition(11,3, GridTypes::blocked);
+    SetFieldAtPosition(8,4, GridTypes::blocked);
+    SetFieldAtPosition(0,5, GridTypes::blocked); SetFieldAtPosition(1,5, GridTypes::blocked); SetFieldAtPosition(7,5, GridTypes::blocked); SetFieldAtPosition(8,5, GridTypes::blocked);
+    SetFieldAtPosition(3,7, GridTypes::blocked); SetFieldAtPosition(4,7, GridTypes::blocked); SetFieldAtPosition(11,7, GridTypes::blocked);
+    SetFieldAtPosition(9,8, GridTypes::blocked);
+    SetFieldAtPosition(1,9, GridTypes::blocked); SetFieldAtPosition(2,9, GridTypes::blocked); SetFieldAtPosition(6,9, GridTypes::blocked); SetFieldAtPosition(10,9, GridTypes::blocked);
+    SetFieldAtPosition(6,10, GridTypes::blocked);
+    SetFieldAtPosition(4,11, GridTypes::blocked); SetFieldAtPosition(8,11, GridTypes::blocked);
+    
+#if defined(FILL_WITH_TEST_SOLUTION)
+    SetFieldAtPosition(0,0, GridTypes::P);
+    SetFieldAtPosition(0,1, GridTypes::P);
+    SetFieldAtPosition(1,1, GridTypes::P);
+    SetFieldAtPosition(0,2, GridTypes::P);
+    SetFieldAtPosition(1,2, GridTypes::P);
+    
+    SetFieldAtPosition(3,0, GridTypes::L);
+    SetFieldAtPosition(4,0, GridTypes::L);
+    SetFieldAtPosition(3,1, GridTypes::L);
+    SetFieldAtPosition(3,2, GridTypes::L);
+    SetFieldAtPosition(3,3, GridTypes::L);
+#endif
 }
 
-static void CheckPositionAccess(int x_p, int y_p) {
-    if ((x_p > MAX_COORDINATE_X - 1) || (y_p > MAX_COORDINATE_Y - 1) ||
-    (x_p < 0) || (y_p < 0))
-    {
-        throw std::out_of_range("Field position out of range.");    
-    }
+void Grid::SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p) {  
+    m_SolutionGrid.SetFieldAtPosition(x_p, y_p, value_p);
 }
 
-void Grid::SetFieldAtPosition(int x_p, int y_p, Field_t value_p) {
-    CheckPositionAccess(x_p, y_p);
-    
-    // get real positions in internal grid
-    int x(x_p + 1);
-    int y(y_p + 1);   
-    
-    m_SolutionGrid[x][y] = value_p;
-}
-
-const Grid::Field_t& Grid::GetFieldAtPosition(int x_p, int y_p) const {
-    CheckPositionAccess(x_p, y_p);
-    
-    // get real positions in internal grid
-    int x(x_p + 1);
-    int y(y_p + 1);   
-    
-    return m_SolutionGrid[x][y];
+const GridTypes::Field_t& Grid::GetFieldAtPosition(int x_p, int y_p) const {
+    return m_SolutionGrid.GetFieldAtPosition(x_p, y_p);
 }
 
 bool Grid::IsValid() const
@@ -62,34 +58,34 @@ bool Grid::IsValid() const
     ReasonForInvalidity_t reasonForInvalidity(NoReasonForInvalidity);
 
     // iterate till last row and column and check right, bottom and bottom right, bottom left
-    for (int x = 1; x < MAX_COORDINATE_X; x++) {
-        for (int y = 1; y < MAX_COORDINATE_Y; y++) {
-            const Field_t& currentField = GetFieldAtPosition(x,y);
+    for (int x = 0; x < MAX_COORDINATE_X - 1; x++) {
+        for (int y = 0; y < MAX_COORDINATE_Y - 1; y++) {
+            const GridTypes::Field_t& currentField = GetFieldAtPosition(x,y);
             
             if (IsPentomino(currentField)) {                
                 // right
-                const Field_t& rightNeighbor = GetFieldAtPosition(x+1, y);
+                const GridTypes::Field_t& rightNeighbor = GetFieldAtPosition(x+1, y);
                 if (IsPentomino(rightNeighbor) && currentField != rightNeighbor) {
                     reasonForInvalidity = TwoPentominosTouches;
                     return false;
                 }
                 
                 // bottom
-                const Field_t& bottomNeighbor = GetFieldAtPosition(x, y+1);
+                const GridTypes::Field_t& bottomNeighbor = GetFieldAtPosition(x, y+1);
                 if (IsPentomino(bottomNeighbor) && currentField != bottomNeighbor) {
                     reasonForInvalidity = TwoPentominosTouches;
                     return false;
                 }
                 
                 // bottom right
-                const Field_t& bottomRightNeighbor = GetFieldAtPosition(x+1, y+1);
+                const GridTypes::Field_t& bottomRightNeighbor = GetFieldAtPosition(x+1, y+1);
                 if (IsPentomino(bottomRightNeighbor) && currentField != bottomRightNeighbor) {
                     reasonForInvalidity = TwoPentominosTouches;
                     return false;
                 }
                 
                 // bottom left
-                const Field_t& bottomLeftNeighbor = GetFieldAtPosition(x-1, y+1);
+                const GridTypes::Field_t& bottomLeftNeighbor = GetFieldAtPosition(x-1, y+1);
                 if (IsPentomino(bottomLeftNeighbor) && currentField != bottomLeftNeighbor) {
                     reasonForInvalidity = TwoPentominosTouches;
                     return false;
@@ -101,33 +97,30 @@ bool Grid::IsValid() const
     return true;
 }
 
-void Grid::FillPentominosWithNumbers(Grid_t& calculationGrid_p) const {
-    std::map<Field_t, int> lastPentominoPlacedNumber;
+void Grid::FillPentominosWithNumbers(InternalGrid& calculationGrid_p) const {
+    std::map<GridTypes::Field_t, int> lastPentominoPlacedNumber;
     
     // iterate over solution grid in western world reading order
     // inner loop should be over x coordinate
     for (int y = 0; y < MAX_COORDINATE_Y; y++) {
         for (int x = 0; x < MAX_COORDINATE_X; x++) {
-            Field_t currentField = GetFieldAtPosition(x,y);
+            GridTypes::Field_t currentField = GetFieldAtPosition(x,y);
             
             if (IsPentomino(currentField)) {
-                std::map<Field_t, int>::iterator mapIterator =
+                std::map<GridTypes::Field_t, int>::iterator mapIterator =
                     lastPentominoPlacedNumber.find(currentField);
                     
                 if (mapIterator == lastPentominoPlacedNumber.end()) {
-                    calculationGrid_p[x+1][y+1] = number_1;
+                    calculationGrid_p.SetFieldAtPosition(x, y, GridTypes::number_1);
                     lastPentominoPlacedNumber.insert(std::make_pair(currentField, 1));
                 } else {
-                    calculationGrid_p[x+1][y+1] = (Field_t) ++(mapIterator->second);
+                    calculationGrid_p.SetFieldAtPosition(x, y, (GridTypes::Field_t) ++(mapIterator->second));
                     // c cast is applicable here, as long as numbers in enum are defined correctly
                 }
             } else {
                 // copy content to calculation grid
-                calculationGrid_p[x+1][y+1] = currentField;
+                calculationGrid_p.SetFieldAtPosition(x, y, currentField);
             }
-            
-            // PH open issue: access to calculationGrid should also be performed via getter/setter
-            // than we could get rid of that dangerous direct access with x+1 and y+1
         }
     }
 }
@@ -139,68 +132,68 @@ int Grid::Points_Get() const
     // 2. do point calculations
     
     int points(0);
-    Grid_t calculationGrid;
+    InternalGrid calculationGrid;
 
     FillPentominosWithNumbers(calculationGrid);
     
     for (int y = 0; y < MAX_COORDINATE_Y; y++) {
         for (int x = 0; x < MAX_COORDINATE_X; x++) {
-            Field_t currentField = GetFieldAtPosition(x,y);
+            GridTypes::Field_t currentField = calculationGrid.GetFieldAtPosition(x,y);
             if (IsNumber(currentField)) {
-                if (SameNumberIsNeighboring(x, y, currentField)) {
+                if (calculationGrid.SameNumberIsNeighboring(x, y, currentField)) {
                     // negative points
-                    points -= (int) currentField * SumOfAdjacentNumbers(x, y);
+                    points -= (int) currentField * calculationGrid.SumOfAdjacentNumbers(x, y);
                 } else {
                     // good case, be happy: positive points
-                    points += (int) currentField + SumOfAdjacentNumbers(x, y);
+                    points += (int) currentField + calculationGrid.SumOfAdjacentNumbers(x, y);
                 }
             }
         }
     }
     
-    return 0;
+    return points;
 }
 
-static char GetLetterRepresentation(Grid::Field_t field_p) {
+static char GetLetterRepresentation(GridTypes::Field_t field_p) {
     switch (field_p) {
-        case Grid::empty:
+        case GridTypes::empty:
             return '.';
-        case Grid::blocked:
+        case GridTypes::blocked:
             return 'x';        
-        case Grid::F:
+        case GridTypes::F:
             return 'F';
-        case Grid::I:
+        case GridTypes::I:
             return 'I';
-        case Grid::L:
+        case GridTypes::L:
             return 'L';
-        case Grid::N:
+        case GridTypes::N:
             return 'N';
-        case Grid::P:
+        case GridTypes::P:
             return 'P';
-        case Grid::T:
+        case GridTypes::T:
             return 'T';
-        case Grid::U:
+        case GridTypes::U:
             return 'U';
-        case Grid::V:
+        case GridTypes::V:
             return 'V';
-        case Grid::W:
+        case GridTypes::W:
             return 'W';
-        case Grid::X:
+        case GridTypes::X:
             return 'X';
-        case Grid::Y:
+        case GridTypes::Y:
             return 'Y';
-        case Grid::Z:
+        case GridTypes::Z:
             return 'Z';
             
-        case Grid::number_1:
+        case GridTypes::number_1:
             return '1';
-        case Grid::number_2:
+        case GridTypes::number_2:
             return '2';
-        case Grid::number_3:
+        case GridTypes::number_3:
             return '3';
-        case Grid::number_4:
+        case GridTypes::number_4:
             return '4';
-        case Grid::number_5:
+        case GridTypes::number_5:
             return '5';
     }
 
@@ -220,10 +213,45 @@ void Grid::PrintConfigurationWithPoints() const
     std::cout << std::endl << "Points: " << Points_Get() << std::endl;
 }
 
-bool Grid::SameNumberIsNeighboring(int x_p, int y_p, Field_t value_p) const
+// implementation of internal grid
+
+InternalGrid::InternalGrid() : m_Grid({GridTypes::empty}) 
 {
-    Field_t currentField = GetFieldAtPosition(x_p, y_p);
-    if (!IsNumber(currentField)) {
+}
+
+static void CheckPositionAccess(int x_p, int y_p) {
+    if ((x_p > MAX_COORDINATE_X - 1) || (y_p > MAX_COORDINATE_Y - 1) ||
+    (x_p < 0) || (y_p < 0))
+    {
+        throw std::out_of_range("Field position out of range.");    
+    }
+}
+
+
+void InternalGrid::SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p) {
+    CheckPositionAccess(x_p, y_p);
+    
+    // get real positions in internal grid
+    int x(x_p + 1);
+    int y(y_p + 1);   
+    
+    m_Grid[x][y] = value_p;
+}
+
+const GridTypes::Field_t& InternalGrid::GetFieldAtPosition(int x_p, int y_p) const {
+    //CheckPositionAccess(x_p, y_p);
+    
+    // get real positions in internal grid
+    int x(x_p + 1);
+    int y(y_p + 1);   
+    
+    return m_Grid[x][y];
+}
+
+bool InternalGrid::SameNumberIsNeighboring(int x_p, int y_p, GridTypes::Field_t value_p) const
+{
+    GridTypes::Field_t currentField = GetFieldAtPosition(x_p, y_p);
+    if (!Grid::IsNumber(currentField)) {
         throw std::invalid_argument("Field value is not a number.");
     }
     
@@ -239,18 +267,20 @@ bool Grid::SameNumberIsNeighboring(int x_p, int y_p, Field_t value_p) const
     return false;
 }
 
-int Grid::SumOfAdjacentNumbers(int x_p, int y_p) const
+int InternalGrid::SumOfAdjacentNumbers(int x_p, int y_p) const
 {
     int sum(0);
     
     for (int y = -1; y <= 1; y++) {
         for (int x = -1; x <= 1; x++) {
             if (y == 0 && x == 0) { continue; }
-            Field_t currentField = GetFieldAtPosition(x_p + x, y_p + y);
-            if (IsNumber(currentField)) {
+            GridTypes::Field_t currentField = GetFieldAtPosition(x_p + x, y_p + y);
+            if (Grid::IsNumber(currentField)) {
                 sum += (int) currentField;
                 // c cast is applicable here, as long as numbers in enum are defined correctly
             }
         }
     }
+    
+    return sum;
 }

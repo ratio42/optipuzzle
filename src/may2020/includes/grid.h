@@ -21,17 +21,7 @@
 #define MAX_COORDINATE_X  12
 #define MAX_COORDINATE_Y  12
 
-class Grid {
-public:    
-    enum ReasonForInvalidity_t {
-        NoReasonForInvalidity,
-        
-        NotAllPentominosUsed,
-        AtLeastOnePentominoTwice,
-        TwoPentominosTouches,
-        NotAllNumbersSet
-    };
-    
+namespace GridTypes {
     enum Field_t {
         // empty (must be 0, since we access it that way)
         empty = 0,
@@ -63,9 +53,38 @@ public:
         Z = FirstPentomino + 11,
         LastPentomino = Z
     };
-
+    
     // we build an outer rim of one field to avoid any border checks
-    typedef std::array< std::array <Field_t, MAX_COORDINATE_Y + 2>, MAX_COORDINATE_X + 2> Grid_t;
+    typedef std::array< std::array <Field_t, MAX_COORDINATE_Y + 2>, MAX_COORDINATE_X + 2> Grid_t;    
+}
+
+// class InternalGrid holds only the values and implements setter and getter
+// has to be separated from Grid we use for solution, since this uses internally
+// some copies for operations, that doesn't need the full functionality
+class InternalGrid {
+public:
+    InternalGrid();
+
+    const GridTypes::Field_t& GetFieldAtPosition(int x_p, int y_p) const;
+    void SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p);    
+
+    bool SameNumberIsNeighboring(int x_p, int y_p, GridTypes::Field_t value_p) const;
+    int SumOfAdjacentNumbers(int x_p, int y_p) const;    
+    
+private:
+    GridTypes::Grid_t m_Grid;
+};
+
+class Grid {
+public:    
+    enum ReasonForInvalidity_t {
+        NoReasonForInvalidity,
+        
+        NotAllPentominosUsed,
+        AtLeastOnePentominoTwice,
+        TwoPentominosTouches,
+        NotAllNumbersSet
+    };
 
     /**
      * @brief Standard constructor
@@ -87,20 +106,18 @@ public:
      */
     void PrintConfigurationWithPoints() const;
     
+    static bool IsNumber(GridTypes::Field_t field_p) {
+        return (field_p >= GridTypes::FirstNumber && field_p <= GridTypes::LastNumber);
+    }    
+    
 private:
     // holds the for solution placed information (pentomino tiles and numbers outside of pentominos)
-    Grid_t m_SolutionGrid;
+    InternalGrid m_SolutionGrid;
     
-    bool IsPentomino(Field_t field_p) const {
-        return (field_p >= FirstPentomino && field_p <= LastPentomino);
+    static bool IsPentomino(GridTypes::Field_t field_p) {
+        return (field_p >= GridTypes::FirstPentomino && field_p <= GridTypes::LastPentomino);
     }
-    bool IsNumber(Field_t field_p) const {
-        return (field_p >= FirstNumber && field_p <= LastNumber);
-    }
-    const Field_t& GetFieldAtPosition(int x_p, int y_p) const;
-    void SetFieldAtPosition(int x_p, int y_p, Field_t value_p);
-    void FillPentominosWithNumbers(Grid_t& calculationGrid_p) const;
-    
-    bool SameNumberIsNeighboring(int x_p, int y_p, Field_t value_p) const;
-    int SumOfAdjacentNumbers(int x_p, int y_p) const;
+    const GridTypes::Field_t& GetFieldAtPosition(int x_p, int y_p) const;
+    void SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p);
+    void FillPentominosWithNumbers(InternalGrid& calculationGrid_p) const;    
 };
