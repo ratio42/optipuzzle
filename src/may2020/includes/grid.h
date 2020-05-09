@@ -16,26 +16,6 @@
 
 // we start with arrays and enum values, there is a lot of room for speed approvement
 
-namespace MayGrid {
-    enum Field_t {
-        empty,
-        blocked,
-        
-        // 12 pentominos
-        F,
-        I,
-        L,
-        N,
-        P,
-        T,
-        U,
-        V,
-        W,
-        X,
-        Y,
-        Z
-    };
-}
 
 // defines
 #define MAX_COORDINATE_X  12
@@ -43,6 +23,50 @@ namespace MayGrid {
 
 class Grid {
 public:    
+    enum ReasonForInvalidity_t {
+        NoReasonForInvalidity,
+        
+        NotAllPentominosUsed,
+        AtLeastOnePentominoTwice,
+        TwoPentominosTouches,
+        NotAllNumbersSet
+    };
+    
+    enum Field_t {
+        // empty (must be 0, since we access it that way)
+        empty = 0,
+        
+        // numbers (must be 1-5, since we access them that way)        
+        number_1 = 1,
+        number_2 = 2,
+        number_3 = 3,
+        number_4 = 4,
+        number_5 = 5,
+        FirstNumber = number_1,
+        LastNumber = number_5,
+        
+        blocked = 6,
+        
+        // 12 pentominos
+        FirstPentomino = blocked + 1,
+        F = FirstPentomino,
+        I = FirstPentomino + 1,
+        L = FirstPentomino + 2,
+        N = FirstPentomino + 3,
+        P = FirstPentomino + 4,
+        T = FirstPentomino + 5,
+        U = FirstPentomino + 6,
+        V = FirstPentomino + 7,
+        W = FirstPentomino + 8,
+        X = FirstPentomino + 9,
+        Y = FirstPentomino + 10,
+        Z = FirstPentomino + 11,
+        LastPentomino = Z
+    };
+
+    // we build an outer rim of one field to avoid any border checks
+    typedef std::array< std::array <Field_t, MAX_COORDINATE_Y + 2>, MAX_COORDINATE_X + 2> Grid_t;
+
     /**
      * @brief Standard constructor
      */
@@ -62,10 +86,21 @@ public:
      * @brief Outputs configuration and points in a human readable format.
      */
     void PrintConfigurationWithPoints() const;
-
     
 private:
-    std::array< std::array <MayGrid::Field_t, MAX_COORDINATE_Y>, MAX_COORDINATE_X> m_Fields;
-
-    // PH maybe initialize empty puzzle field already here
+    // holds the for solution placed information (pentomino tiles and numbers outside of pentominos)
+    Grid_t m_SolutionGrid;
+    
+    bool IsPentomino(Field_t field_p) const {
+        return (field_p >= FirstPentomino && field_p <= LastPentomino);
+    }
+    bool IsNumber(Field_t field_p) const {
+        return (field_p >= FirstNumber && field_p <= LastNumber);
+    }
+    const Field_t& GetFieldAtPosition(int x_p, int y_p) const;
+    void SetFieldAtPosition(int x_p, int y_p, Field_t value_p);
+    void FillPentominosWithNumbers(Grid_t& calculationGrid_p) const;
+    
+    bool SameNumberIsNeighboring(int x_p, int y_p, Field_t value_p) const;
+    int SumOfAdjacentNumbers(int x_p, int y_p) const;
 };
