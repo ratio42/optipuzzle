@@ -5,8 +5,6 @@ Currently just a start with the may optimizer puzzle from: https://puzzles-jn.wi
 I build with CodeLite IDE and g++ on LINUX. But this repository holds only sources and headers, not any project or makefile.
 
 ## Todo:
-* Add a code analysis step to secure code quality (coding standards, documentation, ...) from the very beginning.
 * For May 2020:
-  * Implementation of Grid.IsValid()
-  * Implementation of Grid.Points_Get()
+  * Finish implementation of Grid.IsValid()  
   * A real algorithm for finding solutions.
