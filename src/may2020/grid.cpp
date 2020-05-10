@@ -2,8 +2,6 @@
 #include <iostream>
 #include <map>
 
-#define FILL_WITH_TEST_SOLUTION
-
 Grid::Grid() : m_SolutionGrid()
 {
     // fill the blocked fields
@@ -18,80 +16,6 @@ Grid::Grid() : m_SolutionGrid()
     SetFieldAtPosition(1,9, GridTypes::blocked); SetFieldAtPosition(2,9, GridTypes::blocked); SetFieldAtPosition(6,9, GridTypes::blocked); SetFieldAtPosition(10,9, GridTypes::blocked);
     SetFieldAtPosition(6,10, GridTypes::blocked);
     SetFieldAtPosition(4,11, GridTypes::blocked); SetFieldAtPosition(8,11, GridTypes::blocked);
-    
-#if defined(FILL_WITH_TEST_SOLUTION)
-    SetFieldAtPosition(1,0, GridTypes::W);
-    SetFieldAtPosition(2,0, GridTypes::W);
-    SetFieldAtPosition(0,1, GridTypes::W);
-    SetFieldAtPosition(1,1, GridTypes::W);
-    SetFieldAtPosition(0,2, GridTypes::W);
-    
-    SetFieldAtPosition(4,0, GridTypes::P);
-    SetFieldAtPosition(5,0, GridTypes::P);
-    SetFieldAtPosition(6,0, GridTypes::P);
-    SetFieldAtPosition(4,1, GridTypes::P);
-    SetFieldAtPosition(5,1, GridTypes::P);
-    
-    SetFieldAtPosition(9,0, GridTypes::V);
-    SetFieldAtPosition(10,0, GridTypes::V);
-    SetFieldAtPosition(11,0, GridTypes::V);
-    SetFieldAtPosition(11,1, GridTypes::V);
-    SetFieldAtPosition(11,2, GridTypes::V);
-    
-    SetFieldAtPosition(0,4, GridTypes::I);
-    SetFieldAtPosition(1,4, GridTypes::I);
-    SetFieldAtPosition(2,4, GridTypes::I);
-    SetFieldAtPosition(3,4, GridTypes::I);
-    SetFieldAtPosition(4,4, GridTypes::I);
-    
-    SetFieldAtPosition(7,2, GridTypes::X);
-    SetFieldAtPosition(6,3, GridTypes::X);
-    SetFieldAtPosition(7,3, GridTypes::X);
-    SetFieldAtPosition(8,3, GridTypes::X);
-    SetFieldAtPosition(7,4, GridTypes::X);
-    
-    SetFieldAtPosition(11,4, GridTypes::T);
-    SetFieldAtPosition(9,5, GridTypes::T);
-    SetFieldAtPosition(10,5, GridTypes::T);
-    SetFieldAtPosition(11,5, GridTypes::T);
-    SetFieldAtPosition(11,6, GridTypes::T);
-    
-    SetFieldAtPosition(3,6, GridTypes::N);
-    SetFieldAtPosition(4,6, GridTypes::N);
-    SetFieldAtPosition(5,6, GridTypes::N);
-    SetFieldAtPosition(5,7, GridTypes::N);
-    SetFieldAtPosition(6,7, GridTypes::N);
-    
-    SetFieldAtPosition(1,7, GridTypes::F);
-    SetFieldAtPosition(0,8, GridTypes::F);
-    SetFieldAtPosition(1,8, GridTypes::F);
-    SetFieldAtPosition(2,8, GridTypes::F);
-    SetFieldAtPosition(0,9, GridTypes::F);
-    
-    SetFieldAtPosition(2,10, GridTypes::Y);
-    SetFieldAtPosition(0,11, GridTypes::Y);
-    SetFieldAtPosition(1,11, GridTypes::Y);
-    SetFieldAtPosition(2,11, GridTypes::Y);
-    SetFieldAtPosition(3,11, GridTypes::Y);
-    
-    SetFieldAtPosition(4,9, GridTypes::Z);
-    SetFieldAtPosition(5,9, GridTypes::Z);
-    SetFieldAtPosition(5,10, GridTypes::Z);
-    SetFieldAtPosition(5,11, GridTypes::Z);
-    SetFieldAtPosition(6,11, GridTypes::Z);
-    
-    SetFieldAtPosition(8,7, GridTypes::U);
-    SetFieldAtPosition(9,7, GridTypes::U);
-    SetFieldAtPosition(8,8, GridTypes::U);
-    SetFieldAtPosition(8,9, GridTypes::U);
-    SetFieldAtPosition(9,9, GridTypes::U);
-    
-    SetFieldAtPosition(11,8, GridTypes::L);
-    SetFieldAtPosition(11,9, GridTypes::L);
-    SetFieldAtPosition(11,10, GridTypes::L);
-    SetFieldAtPosition(10,11, GridTypes::L);
-    SetFieldAtPosition(11,11, GridTypes::L);    
-#endif
 }
 
 void Grid::SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p) {  
@@ -271,6 +195,22 @@ void Grid::PrintConfigurationWithPoints() const
     }
     
     std::cout << std::endl << "Points: " << Points_Get() << std::endl;
+}
+
+bool Grid::GetNextFreeFieldPosition(int& x_p, int& y_p) const
+{
+    // inner loop should be over x coordinate
+    for (int y = 0; y < MAX_COORDINATE_Y; y++) {
+        for (int x = 0; x < MAX_COORDINATE_X; x++) {
+            if (GetFieldAtPosition(x,y) == GridTypes::empty) {
+                x_p = x;
+                y_p = y;
+                return true;
+            }
+        }
+    }
+    
+    return false;
 }
 
 // implementation of internal grid

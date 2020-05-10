@@ -11,9 +11,6 @@ int main(int argc, char **argv)
     std::cout << "Starting with May 2020: " << std::endl;
     May may;
     may.SearchSolution();
-    
-    char c;
-    std::cin >> c;
-        
+
     return 0;
 }

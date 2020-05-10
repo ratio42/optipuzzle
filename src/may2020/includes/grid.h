@@ -106,18 +106,50 @@ public:
      */
     void PrintConfigurationWithPoints() const;
     
+    /**
+     * @brief Returns true, if given field type is a number
+     * @param field_p the field type to check for being a number
+     * @return true if parameter is a number, else false
+     */
     static bool IsNumber(GridTypes::Field_t field_p) {
         return (field_p >= GridTypes::FirstNumber && field_p <= GridTypes::LastNumber);
     }    
+    
+    /**
+     * @brief Sets the value of a field at a given position
+     * @param x_p vertical part of the position
+     * @param y_p horizontal part of the position
+     * @param value_p the value to set the field to
+     */
+    void SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p);    
+
+    /**
+     * @brief Returns the value of a field at a given position
+     * @param x_p vertical part of the position
+     * @param y_p horizontal part of the position
+     */
+    const GridTypes::Field_t& GetFieldAtPosition(int x_p, int y_p) const;
+    
+    /**
+     * @brief Determines the next (starting at upper left corner) position that is empty
+     * @param x_p vertical part of the next free position
+     * @param y_p horizontal part of the next free position
+     * @return returns false, if no position is empty at all
+     */
+    bool GetNextFreeFieldPosition(int& x_p, int& y_p) const;
     
 private:
     // holds the for solution placed information (pentomino tiles and numbers outside of pentominos)
     InternalGrid m_SolutionGrid;
     
+    /**
+     * @brief Returns true, if given field type is part of a pentomino
+     * @param field_p the field type to check for being part of a pentomino
+     * @return true if parameter is part of a pentomino, else false
+     */    
     static bool IsPentomino(GridTypes::Field_t field_p) {
         return (field_p >= GridTypes::FirstPentomino && field_p <= GridTypes::LastPentomino);
     }
-    const GridTypes::Field_t& GetFieldAtPosition(int x_p, int y_p) const;
-    void SetFieldAtPosition(int x_p, int y_p, GridTypes::Field_t value_p);
+
     void FillPentominosWithNumbers(InternalGrid& calculationGrid_p) const;    
 };
